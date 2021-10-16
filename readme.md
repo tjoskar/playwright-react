@@ -32,7 +32,7 @@ Test:
 // MyComponent.spec.tsx
 import { expect, test } from '@playwright/test';
 import { createElement } from 'react';
-import { setup } from "@tjoskar/playwright-react";
+import { setup } from 'playwright-react';
 
 // Set up the components you want to test. You can add as many as you want.
 const mount = setup(__dirname, {
@@ -41,7 +41,7 @@ const mount = setup(__dirname, {
 
 test('Test MyComponent', async ({ page }) => {
   await mount(page, ({ MyComponent }) => {
-    // You will get typescript intellisense here
+    // You will get typescript intellisense here, but it can be better
     return createElement(MyComponent, { name: "John" });
   });
 
@@ -51,6 +51,8 @@ test('Test MyComponent', async ({ page }) => {
 
 And then run it as a normal playwright test `npx playwright test`.
 
+See the example folder for more example
+
 ### Limitation
 
-– Playwright can only resolve `js` and `ts` files which means that you can't use any jsx/tsx in your test file.
+- Playwright can only resolve `js` and `ts` files which means that you can't use any jsx/tsx in your test file. See [playwright#7121](https://github.com/microsoft/playwright/issues/7121)
