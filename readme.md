@@ -1,6 +1,6 @@
 ## Playwright React
 
-This library makes it possible to unit test react components in a real browser with Playwright.
+This library makes it possible to unit test react components in a real browser with [Playwright](https://playwright.dev/).
 
 Inspired by [@cypress/react](https://www.npmjs.com/package/@cypress/react).
 
