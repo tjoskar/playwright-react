@@ -1,10 +1,10 @@
 {
-  "name": "playwright-react",
+  "name": "@tjoskar/playwright-react",
   "version": "1.0.0",
   "description": "Makes it possible to unit test react components in a real browser with Playwright",
   "main": "dist/esbuild-test.js",
   "scripts": {
-    "build": "npx esbuild src/esbuild-test.ts --outfile=dist/esbuild-test.js --format=cjs",
+    "build": "npx tsc -p tsconfig.build.json",
     "test": "npx playwright test tests/"
   },
   "dependencies": {

@@ -9,7 +9,7 @@ This is a proof of concept and is probably quite instable. I do not recommend an
 ## Install
 
 ```
-npm install @playwright/test tjoskar/playwright-react
+npm install -D @playwright/test tjoskar/playwright-react
 ```
 
 ## Usage
