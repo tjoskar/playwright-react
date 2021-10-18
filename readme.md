@@ -29,7 +29,7 @@ export function MyComponent(props: Props) {
 
 Test:
 ```ts
-// MyComponent.spec.tsx
+// MyComponent.spec.ts
 import { expect, test } from '@playwright/test';
 import { createElement } from 'react';
 import { setup } from 'playwright-react';
