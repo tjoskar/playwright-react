@@ -21,13 +21,13 @@ export function setup<
       stdin: {
         contents: `
           import { render } from 'react-dom';
-          import React from 'react';
+          import * as React from 'react';
           async function setup() {
             if (!window._interopRequireWildcard) {
               window._interopRequireWildcard = i => i;
             }
-            if (!window._react) {
-              window._react = React;
+            if (!window.import_react) {
+              window.import_react = React;
             }
             ${CompsStr}
             const ComponentToTest = ${cp};

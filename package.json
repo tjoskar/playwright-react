@@ -2,18 +2,25 @@
   "name": "@tjoskar/playwright-react",
   "version": "1.0.0",
   "description": "Makes it possible to unit test react components in a real browser with Playwright",
-  "main": "dist/esbuild-test.js",
+  "main": "dist/cli.js",
+  "bin": {
+    "playright-react": "dist/cli.js"
+  },
   "scripts": {
+    "start": "node dist/cli.js",
     "build": "npx tsc -p tsconfig.build.json",
-    "test": "npx playwright test tests/"
+    "test": "npm run build && node ./dist/cli.js -s ./tests"
   },
   "dependencies": {
     "esbuild": "0.13.7",
+    "glob": "7.2.0",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "yargs": "17.2.1"
   },
   "devDependencies": {
     "@playwright/test": "1.15.2",
+    "@types/glob": "7.2.0",
     "@types/react": "17.0.27",
     "@types/react-dom": "17.0.9",
     "typescript": "4.4.3"
