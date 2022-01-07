@@ -14,7 +14,11 @@ npm install -D @playwright/test tjoskar/playwright-react
 
 ## Usage
 
-Component to test:
+This is a proof of concept and in a exploratory stage.
+
+There is currently four ways of using this lib.
+
+Let's say you want to test this component:
 
 ```tsx
 // MyComponent.tsx
@@ -27,15 +31,16 @@ export function MyComponent(props: Props) {
 }
 ```
 
-Test:
+### Option 1: Using `React.mount` inside the test
+
 ```ts
 // MyComponent.spec.ts
 import { expect, test } from '@playwright/test';
 import { createElement } from 'react';
-import { setup } from 'playwright-react';
+import { setup } from '@tjoskar/playwright-react';
 
 // Set up the components you want to test. You can add as many as you want.
-const mount = setup(__dirname, {
+const mount = setup({
   MyComponent: () => import('./MyComponent').then(c => c.MyComponent),
 });
 
@@ -49,10 +54,84 @@ test('Test MyComponent', async ({ page }) => {
 });
 ```
 
-And then run it as a normal playwright test `npx playwright test`.
+#### 👍
+- All setup in the same file
+- Can use playwright's api
 
-See the example folder for more example
+#### 👎
+- Can not use jsx/tsx. See [playwright#7121](https://github.com/microsoft/playwright/issues/7121)
+- The code will be compiled by both Playwright (for runing in node) and esbuild (for runing in the browser)
+- Closure will not work inside `mount`, ex. you can not access variables outside `mount`. Even if it looks like it.
+- `react.createElement` has bad ts types (pops is always optional).
 
-### Limitation
+### Option 2 (recomended right now): Import an external component (component under test)
 
-- Playwright can only resolve `js` and `ts` files which means that you can't use any jsx/tsx in your test file. See [playwright#7121](https://github.com/microsoft/playwright/issues/7121)
+```ts
+// __tests__/ComponentUnderTest.tsx
+import React from "react";
+import { MyComponent } from "../MyComponent";
+
+export const Stannis = () => <MyComponent name="Stannis" />;
+```
+
+```ts
+// __tests__/MyComponent.spec.ts
+import { expect } from "@playwright/test";
+import { componentTest } from '@tjoskar/playwright-react';
+
+componentTest("Test MyComponent", async ({ page, mount }) => {
+  await mount(() => import('./ComponentUnderTest').then(c => c.Stannis));
+
+  await expect(page.locator('text=Hello! My name is Stannis')).toBeVisible();
+});
+```
+
+#### 👍
+- Easy to understad
+- Can use playwright's api
+
+#### 👎
+- Need seperate file for complex props (we do not need a seperate file in the example above)
+
+### Option 3: Execute the test in the browser
+
+```tsx
+// __tests__/MyComponent.comp-spec.tsx
+import React from "react";
+import { render, screen } from '@testing-library/react'
+import { MyComponent } from "../MyComponent";
+
+export const test = async () => {
+  render(<MyComponent name="Stannis" />);
+
+  screen.getByText(/Stannis/i);
+}
+```
+
+```ts
+// __tests__/MyComponent.spec.ts
+import { expect } from "@playwright/test";
+import { componentTest } from '@tjoskar/playwright-react';
+
+const tests = // find all `*.comp-spec.ts` files
+
+componentTest("Test MyComponent", async ({ execute }) => {
+  await execute(() => import('./MyComponent.comp-spec').then(c => c.test));
+});
+```
+
+#### 👍
+- Can use (react) testing library
+
+#### 👎
+- Can not use playwright's api
+- Need a assert lib (this can be solved)
+- Need seperate file (this can be solved)
+
+### Option 4: Pre compile the test
+
+See https://github.com/tjoskar/playwright-react/pull/1 for more information
+
+## Development
+
+To test this in example, fisrt pack this lib with `npm pack` and then run `npm install` inside `example`. It does not work to install it by `npm install ..` due to linking isuues.

@@ -2,7 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setup = void 0;
 const esbuild_1 = require("esbuild");
-function setup(resolveDir, components) {
+const get_parent_module_1 = require("./get-parent-module");
+function setup(components) {
     const CompsStr = Object.entries(components)
         .map(([name, load]) => `const ${name} = await (${load})();`)
         .join("");
@@ -32,7 +33,7 @@ function setup(resolveDir, components) {
     
           window.setup = setup;
         `,
-                resolveDir,
+                resolveDir: (0, get_parent_module_1.parentModule)(),
                 sourcefile: "imaginary-file.js",
                 loader: "ts",
             },

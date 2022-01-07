@@ -1,11 +1,12 @@
 import { Page } from "@playwright/test";
 import { build } from "esbuild";
+import { parentModule } from "./get-parent-module";
 
 type Awaited<T> = T extends PromiseLike<infer U> ? U : T;
 
 export function setup<
   Components extends Record<string, any>
->(resolveDir: string, components: Components) {
+>(components: Components) {
   const CompsStr = Object.entries(components)
     .map(([name, load]) => `const ${name} = await (${load})();`)
     .join("");
@@ -38,7 +39,7 @@ export function setup<
     
           window.setup = setup;
         `,
-        resolveDir,
+        resolveDir: parentModule(),
         sourcefile: "imaginary-file.js",
         loader: "ts",
       },

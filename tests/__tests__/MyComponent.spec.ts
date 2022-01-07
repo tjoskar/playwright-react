@@ -1,12 +1,12 @@
 import { expect, test } from "@playwright/test";
 import { createElement } from "react";
-import { setup } from "../src/esbuild-test";
+import { setup } from "../../src/esbuild-test";
 
-const mount = setup(__dirname, {
-  MyComponent: () => import("./MyComponent").then((c) => c.MyComponent),
+const mount = setup({
+  MyComponent: () => import("../MyComponent").then((c) => c.MyComponent),
 });
 
-test("Test mycomponent", async ({ page }) => {
+test("Test MyComponent by using creat element in the test", async ({ page }) => {
   await mount(page, ({ MyComponent }) => {
     return createElement(MyComponent, { name: "John" });
   });

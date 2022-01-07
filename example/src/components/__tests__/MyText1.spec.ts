@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test';
 import { createElement } from 'react';
-import { setup } from "playwright-react";
+import { setup } from "@tjoskar/playwright-react";
 
 // Set up the components you want to test. You can add as many as you want.
-const mount = setup(__dirname, {
-  MyText: () => import('./MyText').then(c => c.MyText),
+const mount = setup({
+  MyText: () => import('../MyText').then(c => c.MyText),
 });
 
 test('Render my text', async ({ page }) => {

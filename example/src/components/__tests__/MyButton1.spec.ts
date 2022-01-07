@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
 import { createElement } from 'react';
-import { setup } from "playwright-react";
+import { setup } from "@tjoskar/playwright-react";
 
-const mount = setup(__dirname, {
-  MyButton: () => import('./MyButton').then(c => c.MyButton),
+const mount = setup({
+  MyButton: () => import('../MyButton').then(c => c.MyButton),
 });
 
 test('Click on MyButton', async ({ page }) => {
