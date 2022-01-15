@@ -1,3 +1,8 @@
 import React from 'react';
 
-export const MyComponent = ({ name }: { name: string }) => <h1>Hello! My name is {name}</h1>;
+interface Props {
+  name: string;
+  onClick?: (name: string) => void;
+}
+
+export const MyComponent = ({ name, onClick }: Props) => <h1 onClick={() => onClick?.(name)}>Hello! My name is {name}</h1>;

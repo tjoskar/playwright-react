@@ -132,6 +132,37 @@ componentTest("Test MyComponent", async ({ execute }) => {
 
 See https://github.com/tjoskar/playwright-react/pull/1 for more information
 
+## Assert click events
+
+```ts
+// __tests__/ComponentUnderTest.tsx
+import React from "react";
+import { MyComponent } from "../MyComponent";
+
+export const attachClickListener = ({ spy }: TestArgs) => {
+  const onClick = spy('click');
+
+  return () => <MyComponent name="Dexter" onClick={onClick} />;
+};
+```
+
+```ts
+// __tests__/MyComponent.spec.ts
+import { expect } from "@playwright/test";
+import { componentTest } from '@tjoskar/playwright-react';
+
+componentTest.only("Test MyComponent with a spy function", async ({ page, mount }) => {
+  const { events } = await mount((utils) =>
+    import("./ComponentUnderTest").then((c) => c.attachClickListener(utils))
+  );
+
+  expect(events.callCount('click')).toBe(0);
+  await page.locator("text=Hello! My name is Dexter").click();
+  expect(events.callCount('click')).toBe(1);
+  expect(events.args('click')[0][0]).toBe('Dexter');
+});
+```
+
 ## Development
 
 To test this in example, fisrt pack this lib with `npm pack` and then run `npm install` inside `example`. It does not work to install it by `npm install ..` due to linking isuues.

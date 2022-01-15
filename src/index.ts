@@ -1,2 +1,2 @@
 export { setup } from './esbuild-test';
-export { componentTest } from './component-test';
+export { type TestArgs, componentTest } from './component-test';
