@@ -151,7 +151,7 @@ export const attachClickListener = ({ spy }: TestArgs) => {
 import { expect } from "@playwright/test";
 import { componentTest } from '@tjoskar/playwright-react';
 
-componentTest.only("Test MyComponent with a spy function", async ({ page, mount }) => {
+componentTest("Test MyComponent with a spy function", async ({ page, mount }) => {
   const { events } = await mount((utils) =>
     import("./ComponentUnderTest").then((c) => c.attachClickListener(utils))
   );
