@@ -17,14 +17,10 @@ componentTest(
       import("./cut").then((c) => c.attachClickListener(utils))
     );
 
-    // const cbRec = await getCallbackRecord('click');
-
-    expect(events.callCount('click')).toBe(0);
-    // expect(cbRec?.callCount).toBe(0);
+    expect(events.callCount("click")).toBe(0);
     await page.locator("text=Hello! My name is Dexter").click();
-    expect(events.callCount('click')).toBe(1);
-    expect(events.args('click')[0][0]).toBe('Dexter');
-    // expect(cbRec?.callCount).toBe(1);
+    expect(events.callCount("click")).toBe(1);
+    expect(events.args("click")[0][0]).toBe("Dexter");
   }
 );
 

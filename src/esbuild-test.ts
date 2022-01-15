@@ -4,17 +4,22 @@ import { parentModule } from "./get-parent-module";
 
 type Awaited<T> = T extends PromiseLike<infer U> ? U : T;
 
-export function setup<
-  Components extends Record<string, any>
->(components: Components) {
+export function setup<Components extends Record<string, any>>(
+  components: Components
+) {
   const CompsStr = Object.entries(components)
     .map(([name, load]) => `const ${name} = await (${load})();`)
     .join("");
-  const CompsNameArgument = `{ ${Object.keys(components).join(',')} }`;
+  const CompsNameArgument = `{ ${Object.keys(components).join(",")} }`;
 
-  type AwaitedComponents = { [K in keyof Components]: Awaited<ReturnType<Components[K]>> };
+  type AwaitedComponents = {
+    [K in keyof Components]: Awaited<ReturnType<Components[K]>>;
+  };
 
-  async function mount(page: Page, cp: (comps: AwaitedComponents) => JSX.Element) {
+  async function mount(
+    page: Page,
+    cp: (comps: AwaitedComponents) => JSX.Element
+  ) {
     const buildResult = await build({
       bundle: true,
       write: false,

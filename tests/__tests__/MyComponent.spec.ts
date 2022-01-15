@@ -6,11 +6,12 @@ const mount = setup({
   MyComponent: () => import("../MyComponent").then((c) => c.MyComponent),
 });
 
-test("Test MyComponent by using creat element in the test", async ({ page }) => {
+test("Test MyComponent by using creat element in the test", async ({
+  page,
+}) => {
   await mount(page, ({ MyComponent }) => {
     return createElement(MyComponent, { name: "John" });
   });
 
-  await expect(page.locator('text=Hello! My name is John')).toBeVisible();
+  await expect(page.locator("text=Hello! My name is John")).toBeVisible();
 });
-
