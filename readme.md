@@ -113,8 +113,6 @@ export const test = async () => {
 import { expect } from "@playwright/test";
 import { componentTest } from '@tjoskar/playwright-react';
 
-const tests = // find all `*.comp-spec.ts` files
-
 componentTest("Test MyComponent", async ({ execute }) => {
   await execute(() => import('./MyComponent.comp-spec').then(c => c.test));
 });
