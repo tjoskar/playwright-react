@@ -7,7 +7,7 @@ function setup(components) {
     const CompsStr = Object.entries(components)
         .map(([name, load]) => `const ${name} = await (${load})();`)
         .join("");
-    const CompsNameArgument = `{ ${Object.keys(components).join(',')} }`;
+    const CompsNameArgument = `{ ${Object.keys(components).join(",")} }`;
     async function mount(page, cp) {
         const buildResult = await (0, esbuild_1.build)({
             bundle: true,

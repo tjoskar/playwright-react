@@ -3,10 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.parentModule = void 0;
 const path_1 = require("path");
 function parentModule() {
-    const stacks = callsites();
-    const filename = stacks[2].getFileName();
+    const stacks = [...new Set(callsites().map((s) => s.getFileName()))];
+    const filename = stacks[2];
     if (!filename) {
-        throw new Error('Could not get filename of the test');
+        throw new Error("Could not get filename of the test");
     }
     return (0, path_1.dirname)(filename);
 }
