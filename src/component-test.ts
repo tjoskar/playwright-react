@@ -1,4 +1,5 @@
 import { Page, test } from "@playwright/test";
+import * as http from "http";
 import { build } from "esbuild";
 import { parentModule } from "./get-parent-module";
 
@@ -23,10 +24,14 @@ interface TestFixtures {
   execute: (
     fn: (args: TestArgs) => Promise<() => void>
   ) => Promise<MountResult>;
+  port: number;
 }
 
-export const componentTest = test.extend<TestFixtures>({
-  execute: ({ page }, use) => {
+export const componentTest = test.extend<
+  TestFixtures,
+  { server: { server: http.Server; port: number } }
+>({
+  execute: ({ page, server }, use) => {
     const _execute = async (fn: (args: TestArgs) => Promise<() => void>) => {
       return setupPage(
         page,
@@ -41,12 +46,13 @@ export const componentTest = test.extend<TestFixtures>({
         }
 
         window.run = run;
-      `
+      `,
+        server.port
       );
     };
     use(_execute);
   },
-  mount: ({ page }, use) => {
+  mount: ({ page, server }, use) => {
     const _mount = async (
       comp: (args: TestArgs) => Promise<() => JSX.Element>
     ) => {
@@ -68,16 +74,37 @@ export const componentTest = test.extend<TestFixtures>({
         }
 
         window.run = run;
-      `
+      `,
+        server.port
       );
     };
     use(_mount);
   },
+  server: [
+    async ({}, use, { workerIndex }) => {
+      const server = http.createServer((_request, response) => {
+        response.writeHead(200, { "Content-Type": "text/html" });
+        response.end("<html></html>", "utf-8");
+      });
+
+      const port = 9000 + workerIndex;
+
+      server.listen(port);
+      await new Promise((ready) => server.once("listening", ready));
+
+      await use({ server, port });
+
+      // Cleanup.
+      await new Promise((done) => server.close(done));
+    },
+    // needs auto=true to start the server automatically
+    { scope: "worker", auto: true },
+  ],
 });
 
 const EXPOSE_FUNCTION_NAME = "__PLAYWRIGHT_REACT__";
 
-async function setupPage(page: Page, source: string) {
+async function setupPage(page: Page, source: string, port: number) {
   const events = new Map<string, any[][]>();
   const script = await compile(source);
   await page.exposeFunction(
@@ -93,7 +120,7 @@ async function setupPage(page: Page, source: string) {
       events.get(name)?.push(args);
     }
   );
-  await attachScriptToPage(page, script);
+  await attachScriptToPage(page, script, port);
   return {
     events: {
       args(name: string) {
@@ -140,7 +167,7 @@ async function compile(source: string) {
   return buildResult.outputFiles[0].text;
 }
 
-async function attachScriptToPage(page: Page, script: string) {
+async function attachScriptToPage(page: Page, script: string, port: number) {
   page.on("console", (message) => {
     if (message.type() === "error") {
       console.error(message.text());
@@ -151,12 +178,15 @@ async function attachScriptToPage(page: Page, script: string) {
     console.error(err.message);
   });
 
+  await page.goto(`http://localhost:${port}`);
+
   await page.setContent(`
     <div id="root">NO CONTENT</div>
     <script>
       ${script}
     </script>
   `);
+
   await page.evaluate(() => {
     return (window as any).run();
   });

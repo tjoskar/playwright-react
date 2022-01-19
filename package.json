@@ -1,5 +1,5 @@
 {
-  "name": "@tjoskar/playwright-react",
+  "name": "@kivra/playwright-react",
   "version": "1.0.0",
   "description": "Makes it possible to unit test react components in a real browser with Playwright",
   "main": "dist/index.js",

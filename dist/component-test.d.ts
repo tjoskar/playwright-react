@@ -1,4 +1,5 @@
 /// <reference types="react" />
+import * as http from "http";
 export interface TestArgs {
     spy<Args extends any[], RetVal = any>(name: string, fn?: (...args: Args) => RetVal): (...args: Args) => RetVal;
 }
@@ -11,6 +12,12 @@ interface MountResult {
 interface TestFixtures {
     mount: (comp: (args: TestArgs) => Promise<() => JSX.Element>) => Promise<MountResult>;
     execute: (fn: (args: TestArgs) => Promise<() => void>) => Promise<MountResult>;
+    port: number;
 }
-export declare const componentTest: import("@playwright/test").TestType<import("@playwright/test").PlaywrightTestArgs & import("@playwright/test").PlaywrightTestOptions & TestFixtures, import("@playwright/test").PlaywrightWorkerArgs & import("@playwright/test").PlaywrightWorkerOptions>;
+export declare const componentTest: import("@playwright/test").TestType<import("@playwright/test").PlaywrightTestArgs & import("@playwright/test").PlaywrightTestOptions & TestFixtures, import("@playwright/test").PlaywrightWorkerArgs & import("@playwright/test").PlaywrightWorkerOptions & {
+    server: {
+        server: http.Server;
+        port: number;
+    };
+}>;
 export {};
