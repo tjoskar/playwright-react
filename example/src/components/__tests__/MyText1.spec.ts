@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { createElement } from 'react';
-import { setup } from "@tjoskar/playwright-react";
+import { setup } from "@kivra/playwright-react";
 
 // Set up the components you want to test. You can add as many as you want.
 const mount = setup({

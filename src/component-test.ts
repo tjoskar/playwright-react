@@ -1,7 +1,9 @@
-import { Page, test } from "@playwright/test";
+import { expect, Page, test } from "@playwright/test";
 import * as http from "http";
 import { build } from "esbuild";
+import { relative, join } from "path";
 import { parentModule } from "./get-parent-module";
+import { ReatConfig } from "./type";
 
 export interface TestArgs {
   spy<Args extends any[], RetVal = any>(
@@ -21,6 +23,7 @@ interface TestFixtures {
   mount: (
     comp: (args: TestArgs) => Promise<() => JSX.Element>
   ) => Promise<MountResult>;
+  snapshot: (file: string, options: ReatConfig) => Promise<MountResult>;
   execute: (
     fn: (args: TestArgs) => Promise<() => void>
   ) => Promise<MountResult>;
@@ -40,7 +43,7 @@ export const componentTest = test.extend<
           window._interopRequireWildcard = i => i;
         }
         async function run() {
-          ${argsSetup}
+          ${spyArgsSetup}
           const fn = await (${fn})(args);
           await fn();
         }
@@ -61,12 +64,11 @@ export const componentTest = test.extend<
         `
         import { render } from 'react-dom';
         import React from 'react';
-        import { spy } from 'simple-spy';
         if (!window._interopRequireWildcard) {
           window._interopRequireWildcard = i => i;
         }
         async function run() {
-          ${argsSetup}
+          ${spyArgsSetup}
           const ComponentToTest = await (${comp})(args);
           await new Promise(r => {
             render(React.createElement(ComponentToTest), document.getElementById('root'), r);
@@ -79,6 +81,57 @@ export const componentTest = test.extend<
       );
     };
     use(_mount);
+  },
+  snapshot: ({ page, server }, use) => {
+    const _snapshot = async (file: string, options: ReatConfig) => {
+      const parentModulePath = parentModule();
+      let wrapperImport =
+        "const Wrapper = ({ children }) => React.createElement('div', null, children);";
+      if (options.wrapper) {
+        wrapperImport = `import { ${
+          options.wrapper.componentName
+        } as Wrapper } from '${relative(
+          parentModulePath,
+          join(process.cwd(), options.wrapper.path)
+        )}';`;
+      }
+      const filePath = relative(parentModulePath, join(process.cwd(), file));
+      const codeToCompile = `
+      import { render, unmountComponentAtNode } from 'react-dom';
+      import React from 'react';
+      import { tests } from '${filePath.replace(".tsx", "")}';
+      ${wrapperImport}
+      if (!window._interopRequireWildcard) {
+        window._interopRequireWildcard = i => i;
+      }
+      ${(options.headerInject || [])
+        .map((strToInject) => {
+          return `document.head.appendChild(${strToInject});`;
+        })
+        .join("\n")}
+      async function run() {
+        for (let test of tests) {
+          if (!test.render || !test.name) {
+            throw new Error('Both "render" and "name" must be assignd');
+          }
+          if (test.viewportSize) {
+            await window.${EXPOSE_FUNCTION_NAME}('setViewportSize', test.viewportSize);
+          }
+          const ComponentToTest = () => {
+            return React.createElement(Wrapper, null, test.render());
+          }
+          await new Promise(r => {
+            render(React.createElement(ComponentToTest), document.getElementById('root'), r);
+          });
+          await window.${EXPOSE_FUNCTION_NAME}('snapshot', test.name);
+        }
+      }
+
+      window.run = run;
+    `;
+      return setupPage(page, codeToCompile, server.port, parentModulePath);
+    };
+    use(_snapshot);
   },
   server: [
     async ({}, use, { workerIndex }) => {
@@ -104,20 +157,33 @@ export const componentTest = test.extend<
 
 const EXPOSE_FUNCTION_NAME = "__PLAYWRIGHT_REACT__";
 
-async function setupPage(page: Page, source: string, port: number) {
+async function setupPage(
+  page: Page,
+  source: string,
+  port: number,
+  resolveDir: string = parentModule()
+) {
   const events = new Map<string, any[][]>();
-  const script = await compile(source);
+  const script = await compile(source, resolveDir);
   await page.exposeFunction(
     EXPOSE_FUNCTION_NAME,
-    (type: string, name: string, args: any[]) => {
-      if (type !== "spy") {
+    async (type: string, ...args: any[]) => {
+      if (type === "spy" && args[0]) {
+        const [name, ...eventArgs] = args as [string, ...any[]];
+        if (!events.has(name)) {
+          events.set(name, []);
+        }
+        events.get(name)?.push(eventArgs);
+      } else if (type === "snapshot" && args[0]) {
+        const [name] = args as [string];
+        expect(await page.screenshot()).toMatchSnapshot(name + ".png");
+      } else if (type === "setViewportSize" && args[0]) {
+        const [size] = args as [{ width: number; height: number }];
+        await page.setViewportSize(size);
+      } else {
         console.log(`Unsupported ${EXPOSE_FUNCTION_NAME} type`);
         return;
       }
-      if (!events.has(name)) {
-        events.set(name, []);
-      }
-      events.get(name)?.push(args);
     }
   );
   await attachScriptToPage(page, script, port);
@@ -133,7 +199,7 @@ async function setupPage(page: Page, source: string, port: number) {
   };
 }
 
-const argsSetup = `
+const spyArgsSetup = `
 const args = {
   spy: (name, fn) => {
     return (...args) => {
@@ -152,14 +218,14 @@ const args = {
 };
 `;
 
-async function compile(source: string) {
+async function compile(source: string, resolveDir: string) {
   const buildResult = await build({
     bundle: true,
     write: false,
     watch: false,
     stdin: {
       contents: source,
-      resolveDir: parentModule(),
+      resolveDir,
       sourcefile: "imaginary-file.js",
       loader: "ts",
     },

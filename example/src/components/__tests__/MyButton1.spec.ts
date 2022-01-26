@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { createElement } from 'react';
-import { setup } from "@tjoskar/playwright-react";
+import { setup } from "@kivra/playwright-react";
 
 const mount = setup({
   MyButton: () => import('../MyButton').then(c => c.MyButton),

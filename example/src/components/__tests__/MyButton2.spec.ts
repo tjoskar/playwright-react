@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { componentTest } from "@tjoskar/playwright-react";
+import { componentTest } from "@kivra/playwright-react";
 
 componentTest('Click on MyButton', async ({ page, mount }) => {
   await mount(() => import('../MyButton').then(c => c.MyButton));

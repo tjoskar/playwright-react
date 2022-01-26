@@ -1,5 +1,6 @@
 /// <reference types="react" />
 import * as http from "http";
+import { ReatConfig } from "./type";
 export interface TestArgs {
     spy<Args extends any[], RetVal = any>(name: string, fn?: (...args: Args) => RetVal): (...args: Args) => RetVal;
 }
@@ -11,6 +12,7 @@ interface MountResult {
 }
 interface TestFixtures {
     mount: (comp: (args: TestArgs) => Promise<() => JSX.Element>) => Promise<MountResult>;
+    snapshot: (file: string, options: ReatConfig) => Promise<MountResult>;
     execute: (fn: (args: TestArgs) => Promise<() => void>) => Promise<MountResult>;
     port: number;
 }
