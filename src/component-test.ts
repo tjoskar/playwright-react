@@ -170,7 +170,11 @@ async function compile(source: string) {
 async function attachScriptToPage(page: Page, script: string, port: number) {
   page.on("console", (message) => {
     if (message.type() === "error") {
-      console.error(message.text());
+      const text: string = message.text();
+      if(text.startsWith('Failed to load resource:')) {
+        return
+      }
+      console.error(text);
     }
   });
 
