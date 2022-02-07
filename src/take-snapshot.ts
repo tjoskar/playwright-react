@@ -29,7 +29,10 @@ function readConfigFile(): ReatConfig {
   writeFileSync(tempFileName, config);
   const configContent: ReatConfig = require(tempFileName).default.react;
   unlinkSync(tempFileName);
-  return configContent;
+  return {
+    ...configContent,
+    snapshotUrl: configContent.snapshotUrl || 'http://localhost:3000/snapshot'
+  };
 }
 
 function bundleConfigFile(fileName: string): string {

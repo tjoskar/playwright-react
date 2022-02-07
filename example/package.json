@@ -4,17 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx playwright test"
+    "test": "npx playwright test",
+    "start": "toybox"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@kivra/playwright-react": "file:../kivra-playwright-react-1.0.0.tgz",
-    "@playwright/test": "1.17.1",
-    "@types/react": "^17.0.30",
-    "@types/react-dom": "^17.0.9",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "@kivra/toybox": "1.3.0",
+    "@playwright/test": "1.18.1",
+    "@types/react": "17.0.30",
+    "@types/react-dom": "17.0.9",
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
   }
 }

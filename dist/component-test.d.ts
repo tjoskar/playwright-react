@@ -12,7 +12,7 @@ interface MountResult {
 }
 interface TestFixtures {
     mount: (comp: (args: TestArgs) => Promise<() => JSX.Element>) => Promise<MountResult>;
-    snapshot: (file: string, options: ReatConfig) => Promise<MountResult>;
+    snapshot: (file: string, options: ReatConfig) => Promise<void>;
     execute: (fn: (args: TestArgs) => Promise<() => void>) => Promise<MountResult>;
     port: number;
 }

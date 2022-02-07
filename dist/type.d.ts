@@ -1,5 +1,6 @@
 export interface ReatConfig {
     snapshotFileGlob?: string;
+    snapshotUrl?: string;
     headerInject?: string[];
     wrapper?: {
         path: string;

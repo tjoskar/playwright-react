@@ -29,10 +29,12 @@ function readConfigFile() {
     const config = bundleConfigFile(PLAYWRIGHT_CONFIG_PATH);
     const tempFileName = PLAYWRIGHT_CONFIG_PATH + ".js";
     (0, fs_1.writeFileSync)(tempFileName, config);
-    // const imp = new Function('file', 'return import(file)');
     const configContent = require(tempFileName).default.react;
     (0, fs_1.unlinkSync)(tempFileName);
-    return configContent;
+    return {
+        ...configContent,
+        snapshotUrl: configContent.snapshotUrl || 'http://localhost:3000/snapshot'
+    };
 }
 function bundleConfigFile(fileName) {
     const result = (0, esbuild_1.buildSync)({

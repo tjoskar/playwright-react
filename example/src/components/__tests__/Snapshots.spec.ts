@@ -1,6 +1,6 @@
 import { componentTest, takeSnapshot } from "@kivra/playwright-react";
 
-componentTest.describe('Snapshots', () => {
+componentTest.describe.only('Snapshots', () => {
   takeSnapshot();
 });
 
