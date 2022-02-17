@@ -73,12 +73,12 @@ exports.componentTest = test_1.test.extend({
             await page.goto(`${options.snapshotUrl}?test=/${file}`);
             if (Array.isArray(options.headerInject)) {
                 await page.evaluate((headerInject) => {
-                    headerInject.forEach(h => {
-                        document.head.insertAdjacentHTML('beforeend', h);
+                    headerInject.forEach((h) => {
+                        document.head.insertAdjacentHTML("beforeend", h);
                     });
                 }, options.headerInject);
             }
-            await page.evaluate(EXPOSE_FUNCTION_NAME => {
+            await page.evaluate((EXPOSE_FUNCTION_NAME) => {
                 return window[EXPOSE_FUNCTION_NAME].run();
             }, EXPOSE_FUNCTION_NAME);
         };
@@ -129,7 +129,7 @@ async function setupPage(page) {
         if (message.type() === "error") {
             const text = message.text();
             // Mute network error logs
-            if (text.startsWith('Failed to load resource:')) {
+            if (text.startsWith("Failed to load resource:")) {
                 return;
             }
             console.error(message.text());

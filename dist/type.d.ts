@@ -1,4 +1,4 @@
-export interface ReatConfig {
+export interface ReactConfig {
     snapshotFileGlob?: string;
     snapshotUrl?: string;
     headerInject?: string[];

@@ -7,5 +7,15 @@ declare global {
         };
     }
 }
+export interface SnapshotTest {
+    name?: string;
+    render?(): JSX.Element;
+    viewportSize?: {
+        width: number;
+        height: number;
+    };
+    waitTime?: number;
+    waitForFunc?: () => Promise<void>;
+}
 export declare function mountAndTakeSnapshot(cb: (Component: () => JSX.Element) => JSX.Element): void;
 export {};

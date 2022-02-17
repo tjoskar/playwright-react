@@ -39,12 +39,18 @@ async function executeTest(cb) {
             throw new Error(`Snapshot test most inclode both "name" and "render"`);
         }
         if (test.viewportSize) {
-            await playwrightBridge('setViewportSize', test.viewportSize);
+            await playwrightBridge("setViewportSize", test.viewportSize);
         }
         (0, react_dom_1.unmountComponentAtNode)(rootNode);
         const CompUnderTest = () => react_1.default.createElement(react_1.default.Fragment, null, test.render());
         await asyncRender(cb(CompUnderTest), rootNode);
-        await playwrightBridge('snapshot', test.name);
+        if (test.waitTime) {
+            await new Promise((res) => setTimeout(res, test.waitTime));
+        }
+        if (test.waitForFunc) {
+            await test.waitForFunc();
+        }
+        await playwrightBridge("snapshot", test.name);
     }
 }
 function asyncRender(element, node) {
@@ -61,7 +67,7 @@ function mountAndTakeSnapshot(cb) {
     if (!playwrightBridge) {
         // We are not running in playwright
         window[EXPOSE_FUNCTION_NAME] = (...args) => {
-            console.log('Calling playwright with: ', args);
+            console.log("Calling playwright with: ", args);
             return Promise.resolve();
         };
         executeTest(cb);

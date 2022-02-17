@@ -16,7 +16,7 @@ function takeSnapshot(overwriteConfig) {
         ...configFileContent,
         ...overwriteConfig,
     };
-    const snapshotFileGlob = config.snapshotFileGlob || './src/**/*.snap.tsx';
+    const snapshotFileGlob = config.snapshotFileGlob || "./src/**/*.snap.tsx";
     const snapFiles = fast_glob_1.default.sync(snapshotFileGlob);
     for (const snapFile of snapFiles) {
         (0, component_test_1.componentTest)(snapFile, async ({ snapshot }) => {
@@ -33,7 +33,7 @@ function readConfigFile() {
     (0, fs_1.unlinkSync)(tempFileName);
     return {
         ...configContent,
-        snapshotUrl: configContent.snapshotUrl || 'http://localhost:3000/snapshot'
+        snapshotUrl: configContent.snapshotUrl || "http://localhost:3000/snapshot",
     };
 }
 function bundleConfigFile(fileName) {

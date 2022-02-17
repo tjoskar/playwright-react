@@ -2,7 +2,7 @@ import { expect, Page, test } from "@playwright/test";
 import * as http from "http";
 import { build } from "esbuild";
 import { parentModule } from "./get-parent-module";
-import { ReatConfig } from "./type";
+import { ReactConfig } from "./type";
 
 export interface TestArgs {
   spy<Args extends any[], RetVal = any>(
@@ -22,7 +22,7 @@ interface TestFixtures {
   mount: (
     comp: (args: TestArgs) => Promise<() => JSX.Element>
   ) => Promise<MountResult>;
-  snapshot: (file: string, options: ReatConfig) => Promise<void>;
+  snapshot: (file: string, options: ReactConfig) => Promise<void>;
   execute: (
     fn: (args: TestArgs) => Promise<() => void>
   ) => Promise<MountResult>;
@@ -78,17 +78,17 @@ export const componentTest = test.extend<
     use(_mount);
   },
   snapshot: ({ page }, use) => {
-    const _snapshot = async (file: string, options: ReatConfig) => {
+    const _snapshot = async (file: string, options: ReactConfig) => {
       await setupPage(page);
       await page.goto(`${options.snapshotUrl}?test=/${file}`);
       if (Array.isArray(options.headerInject)) {
         await page.evaluate((headerInject) => {
-          headerInject.forEach(h => {
-            document.head.insertAdjacentHTML('beforeend', h);
-          })
+          headerInject.forEach((h) => {
+            document.head.insertAdjacentHTML("beforeend", h);
+          });
         }, options.headerInject);
       }
-      await page.evaluate(EXPOSE_FUNCTION_NAME => {
+      await page.evaluate((EXPOSE_FUNCTION_NAME) => {
         return (window as any)[EXPOSE_FUNCTION_NAME].run();
       }, EXPOSE_FUNCTION_NAME);
     };
@@ -147,8 +147,8 @@ async function setupPage(page: Page) {
     if (message.type() === "error") {
       const text: string = message.text();
       // Mute network error logs
-      if(text.startsWith('Failed to load resource:')) {
-        return
+      if (text.startsWith("Failed to load resource:")) {
+        return;
       }
       console.error(message.text());
     }
