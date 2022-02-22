@@ -132,7 +132,9 @@ async function setupPage(page: Page) {
         events.get(name)?.push(eventArgs);
       } else if (type === "snapshot" && args[0]) {
         const [name] = args as [string];
-        expect(await page.screenshot()).toMatchSnapshot(name + ".png");
+        expect(
+          await page.locator(".playwright_react_component_wrapper").screenshot()
+        ).toMatchSnapshot(name + ".png");
       } else if (type === "setViewportSize" && args[0]) {
         const [size] = args as [{ width: number; height: number }];
         await page.setViewportSize(size);
