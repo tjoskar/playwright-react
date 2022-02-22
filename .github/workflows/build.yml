@@ -1,0 +1,37 @@
+name: Build and publish
+
+on: ['push']
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: ⚙️ Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.13.1'
+          registry-url: 'https://npm.pkg.github.com'
+
+      - name: ⬇️ Install Dependencies
+        run: npm ci
+        env:
+          CI: true
+
+      - name: 🛠 Build
+        run: npm run build
+
+      - name: 📦 Semantic Release
+        uses: cycjimmy/semantic-release-action@v2
+        id: semantic
+        with:
+          semantic_version: 17.3.7
+          branches: |
+            ['main']
+        env:
+          CI: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

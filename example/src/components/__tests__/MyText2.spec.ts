@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { componentTest } from "@tjoskar/playwright-react";
+import { componentTest } from "@kivra/playwright-react";
 
 componentTest("Render my text", async ({ page, mount }) => {
   mount(() => import("./components/MyText.cut").then((c) => c.SomeText));

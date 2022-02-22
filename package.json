@@ -7,20 +7,34 @@
     "build": "npx tsc -p tsconfig.build.json",
     "test": "npx playwright test tests/"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./package.json": "./package.json",
+    "./client": "./src/client/render-snapshot-component.tsx"
+  },
+  "typesVersions": {
+    "*": {
+      "client": ["./dist/client/render-snapshot-component.d.ts"]
+    }
+  },
   "dependencies": {
     "esbuild": "0.14.10",
+    "fast-glob": "3.2.11",
     "react": "17.0.2",
     "react-dom": "17.0.2"
   },
   "devDependencies": {
-    "@playwright/test": "1.17.1",
+    "@playwright/test": "1.18.1",
     "@testing-library/react": "12.1.2",
     "@types/react": "17.0.38",
     "@types/react-dom": "17.0.11",
     "typescript": "4.5.4"
   },
   "peerDependencies": {
-    "@playwright/test": ">=1.15.2"
+    "@playwright/test": ">=1.18.1"
   },
   "author": "",
   "license": "ISC",
