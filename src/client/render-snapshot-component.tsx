@@ -60,7 +60,11 @@ function asyncRender(
 ): Promise<void> {
   return new Promise<void>((resolve, reject): void => {
     try {
-      reactRender(element, node, resolve);
+      reactRender(
+        <div className="playwright_react_component_wrapper">{element}</div>,
+        node,
+        resolve
+      );
     } catch (error) {
       reject(error);
     }
