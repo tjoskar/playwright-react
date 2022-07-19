@@ -163,6 +163,70 @@ componentTest("Test MyComponent with a spy function", async ({ page, mount }) =>
 });
 ```
 
+## Image snapshot
+
+Create a component you want to take a snapshot of:
+```tsx
+// src/components/__tests__/MyText.snap.tsx
+import React from 'react';
+import { MyText } from '../MyText';
+
+export const tests = [{
+  name: 'My text: Stannis',
+  render(): JSX.Element {
+    return <MyText text="Stannis" />
+  }
+}]
+```
+
+Create a test that will find all snapshots test and render them, one by one:
+
+```tsx
+// src/snapshots.spec.tsx
+import { takeSnapshot } from "@kivra/playwright-react";
+
+takeSnapshot();
+```
+
+Update your `playwright.config.ts`:
+```ts
+// playwright.config.ts
+import { PlaywrightTestConfig } from '@kivra/playwright-react';
+
+const config: PlaywrightTestConfig = {
+  testDir: 'src',
+  testMatch: '**/*.spec.ts',
+  use: {
+    viewport: null,
+  },
+  react: {
+    snapshotFileGlob: './src/**/*.snap.tsx',
+    wrapper: {
+      path: './.playwright/Wrapper',
+      componentName: 'Wrapper'
+    }
+  }
+};
+export default config;
+```
+
+Create a `Wrapper` component that will wrap every snapshot:
+```tsx
+// .playwright/Wrapper.tsx
+import React from "react";
+
+export function Wrapper({ children }: { children: JSX.Element }) {
+  return (
+    <div>
+      <Theme color="dark">{children}</Theme>
+      <Theme color="light">{children}</Theme>
+    </div>
+  );
+}
+
+```
+
+
 ## Development
 
-To test this in example, fisrt pack this lib with `npm pack` and then run `npm install` inside `example`. It does not work to install it by `npm install ..` due to linking isuues.
+To test this in example, fisrt pack this lib with `npm run build && npm pack` and then run `npm install` inside `example`. It does not work to install it by `npm install ..` due to linking isuues.
