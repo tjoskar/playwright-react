@@ -1,3 +1,5 @@
+# See this fork instead: https://github.com/kivra/playwright-react
+
 ## Playwright React
 
 This library makes it possible to unit test react components in a real browser with [Playwright](https://playwright.dev/).
